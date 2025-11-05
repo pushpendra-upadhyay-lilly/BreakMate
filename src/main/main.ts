@@ -3,10 +3,16 @@ import path from 'path';
 import Store from 'electron-store';
 
 // Define the store schema with TypeScript types
-interface StoreSchema {
+export interface StoreSchema {
   theme: 'light' | 'dark' | 'system';
   breakInterval: number;
   breakDuration: number;
+  timerSettings?: {
+    workDuration: number;
+    breakDuration: number;
+    longBreakDuration: number;
+    longBreakInterval: number;
+  };
 }
 
 // Initialize electron-store with proper typing
@@ -16,6 +22,12 @@ const store = new Store<StoreSchema>({
     theme: 'light',
     breakInterval: 20,
     breakDuration: 20,
+    timerSettings: {
+      workDuration: 20,
+      breakDuration: 20,
+      longBreakDuration: 5,
+      longBreakInterval: 4
+    }
   },
 });
 

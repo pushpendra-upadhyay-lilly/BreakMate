@@ -1,10 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { appStore, Theme } from './stores/app';
+  import { appStore } from './stores/app';
+  import type { Theme } from './stores/app';
   import { applyTheme, getResolvedTheme } from './lib/theme';
+
+  // Import Phase 1 components
+  import Timer from './components/Timer.svelte';
+  import Settings from './components/Settings.svelte';
 
   let resolvedTheme: 'light' | 'dark' = 'light';
   let isReady = false;
+  let showSettings = false; // Toggle between Timer and Settings view
 
   // Load saved theme from electron-store on mount
   onMount(() => {
@@ -19,7 +25,6 @@
     (async () => {
       const savedTheme = await window.api.store.get('theme');
 
-      // console.log({ savedTheme });
       if (savedTheme) {
         applyTheme(savedTheme as Theme);
         appStore.setTheme(savedTheme as Theme);
@@ -28,9 +33,7 @@
       }
     })().finally(() => {
       isReady = true;
-
       resolvedTheme = getResolvedTheme();
-
       mediaQuery.addEventListener('change', handleChange);
     });
 
@@ -39,13 +42,12 @@
 
   // React to theme changes and save to electron-store
   $: if (isReady) {
-    // console.log("[APP] Reactive: Theme changed to:", $appStore.theme);
     applyTheme($appStore.theme);
 
     window.api.store
       .set('theme', $appStore.theme)
       .then(() => {
-        // console.log("[APP] Theme saved successfully");
+        // Theme saved
       })
       .catch((err) => console.error('[APP] Error saving theme:', err));
 
@@ -62,21 +64,36 @@
 
 <main>
   <header>
-    <h1>Hello ItsBreakTime</h1>
-    <button class="theme-toggle" on:click={cycleTheme} title="Toggle theme">
-      {#if $appStore.theme === 'light'}
-        ☀️ Light
-      {:else if $appStore.theme === 'dark'}
-        🌙 Dark
-      {:else}
-        🖥️ System
-      {/if}
-    </button>
+    <h1>ItsBreakTime</h1>
+    <div class="header-controls">
+      <!-- Toggle Settings Button -->
+      <button
+        class="settings-btn"
+        on:click={() => (showSettings = !showSettings)}
+        title="Toggle settings"
+      >
+        {showSettings ? '⬅️ Back' : '⚙️ Settings'}
+      </button>
+
+      <!-- Theme Toggle Button -->
+      <button class="theme-toggle" on:click={cycleTheme} title="Toggle theme">
+        {#if $appStore.theme === 'light'}
+          ☀️ Light
+        {:else if $appStore.theme === 'dark'}
+          🌙 Dark
+        {:else}
+          🖥️ System
+        {/if}
+      </button>
+    </div>
   </header>
 
   <div class="content">
-    <p class="status">Status: {$appStore.breakActive ? 'Break' : 'Idle'}</p>
-    <p class="theme-info">Current theme: <strong>{resolvedTheme}</strong></p>
+    {#if showSettings}
+      <Settings />
+    {:else}
+      <Timer />
+    {/if}
   </div>
 </main>
 
@@ -139,7 +156,13 @@
     font-size: 1.5rem;
   }
 
-  .theme-toggle {
+  .header-controls {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .theme-toggle,
+  .settings-btn {
     padding: 8px 16px;
     background: var(--button-bg);
     border: none;
@@ -150,7 +173,8 @@
     transition: background 0.2s ease;
   }
 
-  .theme-toggle:hover {
+  .theme-toggle:hover,
+  .settings-btn:hover {
     background: var(--button-hover);
   }
 
@@ -160,16 +184,5 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
-  }
-
-  .status {
-    font-size: 1.2rem;
-    color: var(--accent-color);
-  }
-
-  .theme-info {
-    font-size: 0.9rem;
-    opacity: 0.7;
   }
 </style>

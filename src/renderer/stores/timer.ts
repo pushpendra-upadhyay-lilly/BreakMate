@@ -33,7 +33,7 @@ const defaultState: TimerState = {
   totalBreaksTaken: 0
 };
 
-const persistedSettings = loadSettings();
+const persistedSettings = await loadSettings();
 
 export const timerSettings = writable<TimerSettings>(persistedSettings || defaultSettings);
 export const timerState = writable<TimerState>(defaultState);

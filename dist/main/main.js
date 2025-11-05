@@ -13,6 +13,12 @@ const store = new electron_store_1.default({
         theme: 'light',
         breakInterval: 20,
         breakDuration: 20,
+        timerSettings: {
+            workDuration: 20,
+            breakDuration: 20,
+            longBreakDuration: 5,
+            longBreakInterval: 4
+        }
     },
 });
 let mainWindow = null;

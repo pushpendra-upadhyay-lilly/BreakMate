@@ -1,22 +1,20 @@
-// src/lib/services/storageService.ts
-import Store from 'electron-store';
+// src/renderer/services/storageService.ts
 import type { TimerSettings } from '../stores/timer';
 
-const store = new Store<{ timerSettings: TimerSettings }>({
-  defaults: {
-    timerSettings: {
-      workDuration: 20,
-      breakDuration: 20,
-      longBreakDuration: 5,
-      longBreakInterval: 4
-    }
-  }
-});
+export async function loadSettings(): Promise<TimerSettings> {
+  // Use your existing 'store-get' IPC handler
+  const settings = await window.api.store.get('timerSettings') as TimerSettings;
 
-export function loadSettings(): TimerSettings {
-  return store.get('timerSettings');
+  // Return defaults if not found
+  return settings || {
+    workDuration: 20,
+    breakDuration: 20,
+    longBreakDuration: 5,
+    longBreakInterval: 4
+  };
 }
 
-export function saveSettings(settings: TimerSettings) {
-  store.set('timerSettings', settings);
+export async function saveSettings(settings: TimerSettings): Promise<void> {
+  // Use your existing 'store-set' IPC handler
+  await window.api.store.set('timerSettings', settings);
 }
