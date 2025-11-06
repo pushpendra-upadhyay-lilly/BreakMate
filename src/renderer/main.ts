@@ -18,14 +18,14 @@ const target = document.getElementById('app')!;
 // Simple hash-based routing
 const hash = window.location.hash;
 
-if (hash === '#/break') {
-  mount(BreakOverlay, { target });
-} else {
-  mount(App, { target });
-}
+let app;
 
-const app = mount(App, {
-  target: document.getElementById('app')!,
-});
+if (hash === '#/break') {
+  console.log('[Renderer] Mounting BreakOverlay component');
+  app = mount(BreakOverlay, { target });
+} else {
+  console.log('[Renderer] Mounting App component');
+  app = mount(App, { target });
+}
 
 export default app;

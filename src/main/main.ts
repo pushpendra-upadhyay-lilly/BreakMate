@@ -203,6 +203,12 @@ function createBreakOverlays() {
       overlayWindow.setAlwaysOnTop(true, 'screen-saver');
     }
 
+    // Use ready-to-show event to ensure content is rendered before showing
+    overlayWindow.once('ready-to-show', () => {
+      console.log(`[Break] Overlay ${index + 1} ready to show`);
+      // Don't show here - let showBreakOverlay control when to show
+    });
+
     overlayWindow.once('closed', () => {
       const idx = breakOverlayWindows.indexOf(overlayWindow);
       if (idx > -1) {
@@ -236,21 +242,36 @@ function showBreakOverlay(duration: number) {
       window.timerService?.breakTimerManager?.getBreakTimeRemaining() || ${duration}
     `).then((remaining: number) => {
       breakOverlayWindows.forEach((overlayWindow) => {
-        overlayWindow.webContents.once('did-finish-load', () => {
-          overlayWindow.webContents.send('break:start', {
-            duration: remaining
-          });
-        });
+        const showWindow = () => {
+          console.log('[Break] Showing overlay window');
+          // Give Svelte a moment to render after receiving the message
+          setTimeout(() => {
+            overlayWindow.show();
+            overlayWindow.focus();
+            overlayWindow.setFullScreen(true);
+          }, 100);
+        };
 
-        if (!overlayWindow.webContents.isLoading()) {
+        const sendStartMessage = () => {
+          console.log('[Break] Sending break:start message with', remaining, 'seconds');
           overlayWindow.webContents.send('break:start', {
             duration: remaining
           });
+          showWindow();
+        };
+
+        // Wait for content to fully load before showing
+        if (overlayWindow.webContents.isLoading()) {
+          console.log('[Break] Waiting for overlay content to load...');
+          overlayWindow.webContents.once('did-finish-load', () => {
+            console.log('[Break] Overlay content loaded');
+            // Wait a bit more for Svelte to mount and render
+            setTimeout(sendStartMessage, 150);
+          });
+        } else {
+          console.log('[Break] Overlay already loaded');
+          sendStartMessage();
         }
-
-        overlayWindow.show();
-        overlayWindow.focus();
-        overlayWindow.setFullScreen(true);
       });
     }).catch((error: Error) => {
       console.error('[Break Timer] Error getting initial time:', error);
