@@ -170,7 +170,8 @@ function createBreakOverlays() {
       movable: false,
       minimizable: false,
       maximizable: false,
-      fullscreenable: false,
+      fullscreenable: true, // Changed to true for kiosk mode
+      kiosk: process.platform === 'darwin' ? false : true, // Kiosk mode on Windows/Linux
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
         contextIsolation: true,
@@ -187,14 +188,15 @@ function createBreakOverlays() {
       });
     }
 
-    // macOS: Make window float above fullscreen apps
+    // macOS: Make window float above fullscreen apps and appear on all Spaces
     if (process.platform === 'darwin') {
       app.dock?.hide();
-      overlayWindow.setAlwaysOnTop(true, 'screen-saver');
+      overlayWindow.setAlwaysOnTop(true, 'screen-saver', 1);
       overlayWindow.setVisibleOnAllWorkspaces(true, {
         visibleOnFullScreen: true,
+        skipTransformProcessType: true,
       });
-      overlayWindow.setFullScreenable(true);
+      overlayWindow.setFullScreenable(false);
       app.dock?.show();
     }
 
@@ -248,7 +250,17 @@ function showBreakOverlay(duration: number) {
           setTimeout(() => {
             overlayWindow.show();
             overlayWindow.focus();
-            overlayWindow.setFullScreen(true);
+
+            // Use simpleFullScreen on macOS to prevent Space switching
+            if (process.platform === 'darwin') {
+              overlayWindow.setSimpleFullScreen(true);
+              // Ensure it stays visible on all workspaces/Spaces
+              overlayWindow.setVisibleOnAllWorkspaces(true, {
+                visibleOnFullScreen: true,
+              });
+            } else {
+              overlayWindow.setFullScreen(true);
+            }
           }, 100);
         };
 
@@ -315,8 +327,15 @@ function hideBreakOverlay() {
       breakOverlayWindows.forEach((overlayWindow) => {
         if (!overlayWindow.isDestroyed()) {
           if (overlayWindow.isFocused()) overlayWindow.blur();
+
+          // Exit fullscreen mode based on platform
+          if (process.platform === 'darwin') {
+            overlayWindow.setSimpleFullScreen(false);
+          } else {
+            overlayWindow.setFullScreen(false);
+          }
+
           overlayWindow.hide();
-          overlayWindow.setFullScreen(false);
           overlayWindow.close();
         }
       });
@@ -527,7 +546,13 @@ app.whenReady().then(() => {
           overlayWindow.once('ready-to-show', () => {
             overlayWindow.show();
             overlayWindow.focus();
-            overlayWindow.setFullScreen(true);
+
+            // Use simpleFullScreen on macOS to prevent Space switching
+            if (process.platform === 'darwin') {
+              overlayWindow.setSimpleFullScreen(true);
+            } else {
+              overlayWindow.setFullScreen(true);
+            }
           });
 
           breakOverlayWindows.push(overlayWindow);
