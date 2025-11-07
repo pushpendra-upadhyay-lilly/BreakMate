@@ -249,7 +249,10 @@ Be respectful, inclusive, and constructive in all interactions. We're building t
 | `npm run format:check`       | Check code formatting                                 |
 
 ## Run in Mac or Drag into Applications Folder
-`xattr -cr out/BreakMate-darwin-arm64/BreakMate.app && open out/BreakMate-darwin-arm64/BreakMate.app`
+
+Run this command: `xattr -cr /Applications/BreakMate.app`
+
+Since the app is not signed, we need to run this command for the app to work.
 
 ## License
 
