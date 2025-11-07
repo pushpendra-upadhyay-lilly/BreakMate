@@ -439,8 +439,8 @@ ipcMain.on('break:snooze', () => {
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 900, //TODO: change to 400 later
-    height: 500,
+    width: 400,
+    height: 600,
     show: false, // Hidden by default; show when ready
     resizable: true,
     webPreferences: {
