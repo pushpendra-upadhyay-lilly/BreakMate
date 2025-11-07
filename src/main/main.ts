@@ -38,11 +38,22 @@ const store = new Store<StoreSchema>({
 // Auto-launch helper functions using Electron's native API (no permissions needed!)
 function enableAutoLaunch() {
   try {
-    app.setLoginItemSettings({
-      openAtLogin: true,
-      openAsHidden: false,
-      name: 'BreakMate',
-    });
+    if (process.platform === 'darwin') {
+      // macOS: Use mainAppService to start hidden in background
+      app.setLoginItemSettings({
+        openAtLogin: true,
+        name: 'BreakMate',
+        type: 'mainAppService', // Starts in background on macOS
+        args: ['--hidden'], // Add custom argument to detect auto-launch
+      });
+    } else {
+      // Windows/Linux
+      app.setLoginItemSettings({
+        openAtLogin: true,
+        name: 'BreakMate',
+        args: ['--hidden'],
+      });
+    }
     const settings = app.getLoginItemSettings();
     console.log('[Auto-launch] Enabled using native Electron API. OS verified:', settings.openAtLogin);
 
@@ -508,10 +519,27 @@ function createWindow() {
     if (process.platform === 'darwin') {
       app.dock?.hide();
     }
-    mainWindow?.show();
 
-    // Ask for auto-launch permission after window is shown
-    askAutoLaunchPermission();
+    // Check if app was auto-launched (check at runtime, not at module load)
+    const loginSettings = app.getLoginItemSettings();
+    const wasOpenedAtLogin = loginSettings.wasOpenedAtLogin;
+    const hasHiddenArg = process.argv.includes('--hidden');
+    const wasAutoLaunched = wasOpenedAtLogin || hasHiddenArg;
+
+    console.log('[App] wasOpenedAtLogin:', wasOpenedAtLogin);
+    console.log('[App] hasHiddenArg:', hasHiddenArg);
+    console.log('[App] wasAutoLaunched:', wasAutoLaunched);
+    console.log('[App] process.argv:', process.argv);
+
+    // Only show window if NOT auto-launched
+    if (!wasAutoLaunched) {
+      console.log('[App] Manually launched - showing window');
+      mainWindow?.show();
+      // Ask for auto-launch permission after window is shown (only on manual launch)
+      askAutoLaunchPermission();
+    } else {
+      console.log('[App] Started via auto-launch, running in background');
+    }
   });
 
   // Prevent window close; hide instead (menubar behavior)
