@@ -69,8 +69,8 @@
   <h2>App Settings</h2>
 
   <label class="checkbox-label">
-    <input 
-      type="checkbox" 
+    <input
+      type="checkbox"
       bind:checked={autoLaunchEnabled}
       onchange={toggleAutoLaunch}
       disabled={isLoadingAutoLaunch}
@@ -100,7 +100,7 @@
     margin-bottom: 1rem;
   }
 
-  input[type="number"] {
+  input[type='number'] {
     width: 100%;
     padding: 0.5rem;
     margin-top: 0.5rem;
@@ -115,13 +115,13 @@
     cursor: pointer;
   }
 
-  input[type="checkbox"] {
+  input[type='checkbox'] {
     width: auto;
     margin: 0;
     cursor: pointer;
   }
 
-  input[type="checkbox"]:disabled {
+  input[type='checkbox']:disabled {
     cursor: not-allowed;
     opacity: 0.5;
   }

@@ -228,7 +228,7 @@ function createBreakOverlays() {
 
     // Load break overlay HTML
     if (isDev) {
-      overlayWindow.loadFile(`${VITE_DEV_SERVER_URL}#/break`);
+      overlayWindow.loadURL(`${VITE_DEV_SERVER_URL}#/break`);
     } else {
       overlayWindow.loadFile(path.join(__dirname, '../renderer/index.html'), {
         hash: 'break'
@@ -452,7 +452,7 @@ function createWindow() {
 
   // Load Vite dev server in dev, production build in prod
   if (isDev) {
-    mainWindow.loadFile(VITE_DEV_SERVER_URL);
+    mainWindow.loadURL(VITE_DEV_SERVER_URL);
     mainWindow.webContents.openDevTools(); // Optional: auto-open DevTools
   } else {
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
@@ -465,7 +465,7 @@ function createWindow() {
       app.dock?.hide();
     }
     mainWindow?.show();
-    
+
     // Ask for auto-launch permission after window is shown
     askAutoLaunchPermission();
   });
@@ -495,7 +495,7 @@ function createWindow() {
 
 function createTray() {
   // Use a template icon for macOS (monochrome 16x16 or 18x18 PNG)
-  const iconPath = path.join(__dirname, '../../assets/trayTemplate.png');
+  const iconPath = path.join(__dirname, '../../assets/tray_icon.png');
   const icon = nativeImage.createFromPath(iconPath);
 
   // macOS template icons should be Template images
@@ -553,7 +553,7 @@ function createTray() {
 // Auto-launch permission dialog
 async function askAutoLaunchPermission() {
   const isConfigured = store.get('autoLaunchConfigured');
-  
+
   if (!isConfigured) {
     // Wait a bit for the window to be ready
     setTimeout(async () => {
@@ -650,7 +650,7 @@ app.whenReady().then(() => {
         });
 
         if (isDev) {
-          overlayWindow.loadFile(`${VITE_DEV_SERVER_URL}#/break`);
+          overlayWindow.loadURL(`${VITE_DEV_SERVER_URL}#/break`);
         } else {
           overlayWindow.loadFile(path.join(__dirname, '../renderer/index.html'), {
             hash: 'break'
