@@ -15,12 +15,21 @@ window.timerService = timerService;
 
 const target = document.getElementById('app')!;
 
-// Simple hash-based routing
+// Check both hash and search params for route (loadFile uses search params)
 const hash = window.location.hash;
+const searchParams = new URLSearchParams(window.location.search);
+const routeParam = searchParams.get('route');
 
 let app;
 
-if (hash === '#/break') {
+// Check if this is the break overlay route
+const isBreakRoute =
+  routeParam === 'break' ||
+  hash === '#break' ||
+  hash === '#/break' ||
+  hash.includes('break');
+
+if (isBreakRoute) {
   console.log('[Renderer] Mounting BreakOverlay component');
   app = mount(BreakOverlay, { target });
 } else {

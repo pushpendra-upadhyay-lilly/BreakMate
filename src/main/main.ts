@@ -285,8 +285,10 @@ function createBreakOverlays() {
     if (isDev) {
       overlayWindow.loadURL(`${VITE_DEV_SERVER_URL}#/break`);
     } else {
-      overlayWindow.loadFile(path.join(__dirname, '../renderer/index.html'), {
-        hash: 'break'
+      const indexPath = path.join(__dirname, '../renderer/index.html');
+      overlayWindow.loadFile(indexPath, {
+        hash: '/break',
+        query: { route: 'break' }
       });
     }
 
@@ -590,9 +592,11 @@ function createTray() {
     },
     {
       label: 'Take Break Now',
-      enabled: false, // Stub for Phase 1
+      enabled: true,
       click: () => {
-        // console.log('Break triggered');
+        console.log('[Tray] Take Break Now clicked - triggering break overlay');
+        const breakDuration = store.get('timerSettings')?.breakDuration || 20;
+        showBreakOverlay(breakDuration);
       },
     },
     { type: 'separator' },
@@ -724,8 +728,10 @@ app.whenReady().then(() => {
         if (isDev) {
           overlayWindow.loadURL(`${VITE_DEV_SERVER_URL}#/break`);
         } else {
-          overlayWindow.loadFile(path.join(__dirname, '../renderer/index.html'), {
-            hash: 'break'
+          const indexPath = path.join(__dirname, '../renderer/index.html');
+          overlayWindow.loadFile(indexPath, {
+            hash: '/break',
+            query: { route: 'break' }
           });
         }
 
