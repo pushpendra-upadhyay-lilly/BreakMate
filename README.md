@@ -2,6 +2,13 @@
 
 A free and open-source desktop application for digital wellness and healthy screen habits. BreakMate brings all the features of LookAway to everyone, completely free—helping you combat digital eye strain, maintain better posture, and build sustainable work routines.[1][2][3]
 
+## 📥 Download
+
+**Latest Release (v1.0.1):**
+- [Download for macOS (Apple Silicon)](https://github.com/pushpendra-upadhyay-lilly/BreakMate/releases/download/v1.0.1/BreakMate-darwin-arm64-1.0.1.zip)
+
+> **Note:** After downloading, you may need to run `xattr -cr /Applications/BreakMate.app` to bypass macOS Gatekeeper warnings.
+
 ## Description
 
 BreakMate is a cross-platform desktop application built with Electron and Svelte that helps protect your eyes and boost productivity through smart break reminders. The app runs in your system tray and intelligently reminds you to take breaks, preventing eye strain, poor posture, and burnout.[2][1]
