@@ -4,8 +4,8 @@ A free and open-source desktop application for digital wellness and healthy scre
 
 ## 📥 Download
 
-**Latest Release (v1.0.1):**
-- [Download for macOS (Apple Silicon)](https://github.com/pushpendra-upadhyay-lilly/BreakMate/releases/download/v1.0.1/BreakMate-darwin-arm64-1.0.1.zip)
+**Latest Release (v1.0.2):**
+- [Download for macOS (Apple Silicon)](https://github.com/pushpendra-upadhyay-lilly/BreakMate/releases/download/v1.0.1/BreakMate-darwin-arm64-1.0.2.zip)
 
 > **Note:** After downloading, you may need to run `xattr -cr /Applications/BreakMate.app` to bypass macOS Gatekeeper warnings.
 
